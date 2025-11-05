@@ -1,20 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Pressable, Modal } from 'react-native';
+import { Image, StyleSheet, Text, View, Pressable, Modal } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
 export default function App() {
 
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [longPress, setLongPress] = useState<boolean>(false)
+  const [onPressOut, setOnPressOut] = useState<boolean>(false)
   const handlePress = () => setModalVisible(true)
   const handleLongPress = () => {
     setLongPress(true)
     setModalVisible(true)
   }
+  const handlePressOut = () => {
+    setOnPressOut(true)
+    setModalVisible(true)
+  }
   const handleClose = () => {
     setModalVisible(false)
     setLongPress(false)
+    setOnPressOut(false)
   }
 
   return (
@@ -28,12 +34,17 @@ export default function App() {
         >
         <View style={styles.container}>
           <View style={styles.modalView}>
-            {!longPress ? (
+            {!longPress && !onPressOut ? (
               <Text style={styles.modalText}>This is modal...</Text>
-            ) : (
+            ) : !onPressOut ? (
               <>
                 <Text style={styles.modalText}>Congratulations!</Text>
                 <Text style={styles.modalText}>You have pressed long enough!</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalText}>Surprise!!!</Text>
+                <Text style={styles.modalText}>You've found a secret Pressable</Text>
               </>
             )}
             <Pressable onPress={handleClose}>
@@ -42,14 +53,28 @@ export default function App() {
           </View>
         </View>
         </Modal>
-        <Pressable onPress={handlePress}>
-          <Text style={styles.appText}>Show modal message</Text>
-        </Pressable>
-        <Pressable 
-        onLongPress={handleLongPress}
-        delayLongPress={1000}>
-          <Text style={styles.appText}>Hold your press!</Text>
-        </Pressable>
+        <View>
+          <Text style={styles.header}> Lets test Modal components!</Text>
+        </View>
+        <View>
+          <Pressable onPress={handlePress}>
+            <Text style={styles.appText}>Show modal message</Text>
+          </Pressable>
+          <Pressable 
+            onLongPress={handleLongPress}
+            delayLongPress={1000}>
+            <Text style={styles.appText}>Hold your press!</Text>
+          </Pressable>
+          <Pressable
+            onPressOut={handlePressOut}>
+            <Image
+              style={styles.image}
+              source={require('./assets/pointing-finger.jpg')}  
+            />
+          </Pressable>
+        </View>
+        
+        
         <StatusBar style="auto" />
       </SafeAreaView>
     </SafeAreaProvider>
@@ -61,7 +86,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2f3f6fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
+  },
+  header: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold'
   },
   modalView: {
     backgroundColor: '#abd7eeff',
@@ -81,7 +111,13 @@ const styles = StyleSheet.create({
   appText: {
     fontSize: 18,
     marginBottom: 30,
-    color: '#fff'
+    color: '#fff',
+    textAlign: 'center'
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginTop: 60
   }
 
 });
